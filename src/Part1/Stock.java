@@ -4,7 +4,7 @@ package Part1;
  */
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 
 public class Stock implements Comparable<Object>{
@@ -75,7 +75,6 @@ public class Stock implements Comparable<Object>{
     public void setProductName(String productName) {
         this.productName = productName;
     }
-
 
     // so the stock objects can be compared when sorting/searching
     // NOTE: this will only allow comparisons based on the title of the film
