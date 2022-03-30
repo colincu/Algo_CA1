@@ -7,6 +7,7 @@ package Part1;
  */
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -25,8 +26,8 @@ public class StockApp {
         String fileName = dir.getAbsolutePath() + "/Stock.csv";
         Scanner myFile = new Scanner(new File(fileName));
 
-        //create a new stock catalogue
-        Stock[] myStock = new Stock[10000];
+        //create a new stock catalogue - used arraylist so we can add new objects in part2.1
+        ArrayList<Stock> myStock = new ArrayList<Stock>(10000);
 
         // this will just move us past the header line in the csv file
         myFile.nextLine();
@@ -40,14 +41,16 @@ public class StockApp {
             st = myFile.nextLine();
             String[] data = st.split(",");
             //create stock object from the line read from file and add to array
-            myStock[i++] = new Stock(Integer.parseInt(data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2]), data[3], ft.parse(data[4]), data[5]);
+            Stock stock = new Stock(Integer.parseInt(data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2]), data[3], ft.parse(data[4]), data[5]);
+            myStock.add(stock);
+            i++;
 
         }
         myFile.close();  //closes the scanner
 
         // show first 10 objects in array before sorting
         for (i = 0; i < 10; i++) {
-            System.out.println(myStock[i]);
+            System.out.println(myStock.get(i));
         }
         //Part1.1 - merge sort
         startTime = System.nanoTime();  //record start time just before we execute the sorting algorithm
@@ -60,7 +63,7 @@ public class StockApp {
 
         // show first 10 objects in array after merge sorting
         for (i = 0; i < 10; i++) {
-            System.out.println(myStock[i]);
+            System.out.println(myStock.get(i));
         }
 
         //Part1.3 - binary search by date
@@ -78,7 +81,7 @@ public class StockApp {
             System.out.println("Date last found at index: " + lastResult);
             System.out.println("Below is the list of stock bought on: " + dateToSearch);
             for(int num = firstResult; num <= lastResult; num++ ){
-                System.out.println(myStock[num]);
+                System.out.println(myStock.get(num));
             }
         }
 
@@ -88,7 +91,7 @@ public class StockApp {
     }
 
     //Part1.1 - sorting algorithm - merge sort
-    static void merge(Stock[] myStock, int lowerB, int mid, int upperB){
+    static void merge(ArrayList<Stock> myStock, int lowerB, int mid, int upperB){
         int i = lowerB;
         int j = mid;
         //use temp array to store merged sub-sequence
@@ -97,31 +100,31 @@ public class StockApp {
         while(i < mid && j < upperB){
             //compareTo has been overridden to compare based on column 5 (buyDate) and then compare by stockNo if dates
             //are equal
-            int compare = myStock[i].compareTo(myStock[j]);
+            int compare = myStock.get(i).compareTo(myStock.get(j));
             if(compare < 0){
-                temp[t] = myStock[i]; i++; t++;
+                temp[t] = myStock.get(i); i++; t++;
             }
             else{
-                temp[t] = myStock[j]; j++; t++;
+                temp[t] = myStock.get(j); j++; t++;
             }
         }
         //tag on remaining sequence
         while(i < mid){
-            temp[t] = myStock[i]; i++; t++;
+            temp[t] = myStock.get(i); i++; t++;
         }
         while(j < upperB){
-            temp[t] = myStock[j]; j++; t++;
+            temp[t] = myStock.get(j); j++; t++;
         }
         //copy temp back to f
         i = lowerB;
         t = 0;
         while(t < temp.length){
-            myStock[i] = temp[t];
+            myStock.set(i, temp[t]);
             i++; t++;
         }
     }
 
-    static void mergeSort(Stock[] myStock, int lowerB, int upperB){
+    static void mergeSort(ArrayList<Stock> myStock, int lowerB, int upperB){
         if(lowerB + 1 < upperB){
             int mid = (lowerB + upperB)/2;
             mergeSort(myStock, lowerB, mid);
@@ -137,19 +140,19 @@ public class StockApp {
      * - we will use binary search to find the first item bought on this date and the last item
      * - then we will display all items between first and last occurrence
      */
-    static int searchFirst(Stock[] myStock, String date) throws ParseException {
+    static int searchFirst(ArrayList<Stock> myStock, String date) throws ParseException {
         // convert search date string to Date
         SimpleDateFormat enteredDate = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = enteredDate.parse(date);
         //System.out.println("Searching for date: " + searchDate);
         int first = 0;
-        int last = myStock.length -1;
+        int last = myStock.size() -1;
         //for analysing time complexity we can adjust the amount on entries we search by adjusting this variable
         //int last = 10;
         int result = -1;
         while(first <= last){
             int middle = (first +last)/2;
-            Date stockDate = myStock[middle].getBuyDate();
+            Date stockDate = myStock.get(middle).getBuyDate();
             //System.out.println("Checking if " + stockDate + " is after " + searchDate );
             if (stockDate.before(searchDate)){
                 //System.out.println("Confirmed that " + stockDate + " is after " + searchDate );
@@ -169,17 +172,17 @@ public class StockApp {
     }
 
     //return the last index of the
-    static int searchLast(Stock[] myStock, String date) throws ParseException {
+    static int searchLast(ArrayList<Stock> myStock, String date) throws ParseException {
         // convert search date string to Date
         SimpleDateFormat enteredDate = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = enteredDate.parse(date);
         //System.out.println("Searching for date: " + searchDate);
         int first = 0;
-        int last = myStock.length -1;
+        int last = myStock.size() -1;
         int result = -1;
         while(first <= last){
             int middle = (first +last)/2;
-            Date stockDate = myStock[middle].getBuyDate();
+            Date stockDate = myStock.get(middle).getBuyDate();
             //System.out.println("Checking if " + stockDate + " is after " + searchDate );
             if (stockDate.before(searchDate)){
                 //System.out.println("Confirmed that " + stockDate + " is after " + searchDate );
