@@ -13,6 +13,11 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+//Part2.3- exception handling allowed values
+enum AllowedTypes{
+    food, furniture, clothing
+}
+
 public class StockApp {
 
     public static void main(String[] args) throws Exception {
@@ -67,8 +72,10 @@ public class StockApp {
         }
 
         //Part1.3 - binary search by date
+        Scanner myDateInput = new Scanner(System.in);
+        System.out.println("Please enter date to search in the following format: yyyy-mm-dd ");
+        String dateToSearch = myDateInput.nextLine();
         int firstResult;
-        String dateToSearch = "2016-10-16";
         startTime = System.nanoTime();  //record start time just before we execute the searching algorithm
         firstResult = searchFirst(myStock, dateToSearch);
         endTime = System.nanoTime();  //record end time just after searching algorithm runs
@@ -88,6 +95,60 @@ public class StockApp {
         //Part1.4 - time complexity measure for search algorithm in microseconds for visibility
         totalTime = (endTime - startTime)/1000;
         System.out.println("Searching the first occurrence of the date  took: " + totalTime);
+
+        //Part2.1 - accept new record and add it at the end of the arraylist
+        //Example Input for stock: (12.2, 120.3, “furniture”, 2015-01-10, ”L-Sofa”)
+        //product_size,cost,product_type,buy_date,product_name
+
+        //get user input
+        Scanner myInput = new Scanner(System.in);
+        System.out.println("Entry of new stock item....");
+        System.out.println("Please enter the product size: ");
+        float size = myInput.nextFloat();
+        System.out.println("Please enter the product cost: ");
+        float cost = myInput.nextFloat();
+        //bool to flag when to exit while loop
+        boolean validType = false;
+        String type = "";
+        //loop until user enter correct type
+        while(validType == false) {
+            System.out.println("Please enter the product type: ");
+            type = myInput.next();
+            //Part2.3- exception handling if invalid input entered
+            try {
+                AllowedTypes.valueOf(type);
+                validType = true;
+            } catch (IllegalArgumentException err) {
+                System.out.println(err);
+                System.out.println("Product type can only be one of : furniture | clothing | food");
+            }
+        }
+        System.out.println("Please enter the date the product was bought: ");
+        String buyDate = myInput.next();
+        //Part2.2 - date validation on user input
+        if (checkDate(buyDate)){
+            System.out.println("Please enter the product name: ");
+            String name = myInput.next();
+
+            //generate the next available stock number
+            int stockNum = myStock.size() +1;
+            //create stock object from the user Input data
+            Stock userAddedStock = new Stock(stockNum, size, cost, type, ft.parse(buyDate), name);
+            //add new stock entry to arraylist
+            myStock.add(userAddedStock);
+
+            //check if new entry added
+            // show first 10 objects in array after merge sorting
+            for (i = 9995; i < myStock.size(); i++) {
+                System.out.println(myStock.get(i));
+            }
+        }
+        else {
+            System.out.println("Please enter a valid date between 2014-05-01 and today's date: ");
+        }
+
+
+
     }
 
     //Part1.1 - sorting algorithm - merge sort
@@ -199,6 +260,28 @@ public class StockApp {
             }
         }
         return result;
+    }
+
+    ////Part2.2 - method to validate date input
+    static boolean checkDate(String date) throws ParseException {
+        //get current date
+        Date currentDate = new Date();
+        //convert input string to date object
+        Date inputDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+
+        //check date is not after current date
+        if(inputDate.after(currentDate)){
+            return false;
+        }
+
+        //check date is not before start of company
+        String start = "2014-05-01";
+        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+        if(inputDate.before(startDate)){
+            return false;
+        }
+        return true;
+
     }
 }
 
