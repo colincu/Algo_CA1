@@ -32,7 +32,7 @@ public class StockApp {
         Scanner myFile = new Scanner(new File(fileName));
 
         //create a new stock catalogue - used arraylist so we can add new objects in part2.1
-        ArrayList<Stock> myStock = new ArrayList<Stock>(10000);
+        ArrayList<Stock> myStock = new ArrayList<>(10000);
 
         // this will just move us past the header line in the csv file
         myFile.nextLine();
@@ -80,13 +80,16 @@ public class StockApp {
         firstResult = searchFirst(myStock, dateToSearch);
         endTime = System.nanoTime();  //record end time just after searching algorithm runs
         if(firstResult == -1){
+            //If no items found on date searched
             System.out.println("Not an existing buy_date!");
         }
         else{
+            //only search for last index if there was a result for first index search
             int lastResult = searchLast(myStock, dateToSearch);
             System.out.println("Date first found at index: " + firstResult);
             System.out.println("Date last found at index: " + lastResult);
             System.out.println("Below is the list of stock bought on: " + dateToSearch);
+            //print out all items bought on the date searched
             for(int num = firstResult; num <= lastResult; num++ ){
                 System.out.println(myStock.get(num));
             }
@@ -111,7 +114,7 @@ public class StockApp {
         boolean validType = false;
         String type = "";
         //loop until user enter correct type
-        while(validType == false) {
+        while(!validType) {
             System.out.println("Please enter the product type: ");
             type = myInput.next();
             //Part2.3- exception handling if invalid input entered
@@ -163,11 +166,12 @@ public class StockApp {
             //are equal
             int compare = myStock.get(i).compareTo(myStock.get(j));
             if(compare < 0){
-                temp[t] = myStock.get(i); i++; t++;
+                temp[t] = myStock.get(i); i++;
             }
             else{
-                temp[t] = myStock.get(j); j++; t++;
+                temp[t] = myStock.get(j); j++;
             }
+            t++;
         }
         //tag on remaining sequence
         while(i < mid){
@@ -209,7 +213,7 @@ public class StockApp {
         int first = 0;
         int last = myStock.size() -1;
         //for analysing time complexity we can adjust the amount on entries we search by adjusting this variable
-        //int last = 10;
+        //int last = 5000;
         int result = -1;
         while(first <= last){
             int middle = (first +last)/2;

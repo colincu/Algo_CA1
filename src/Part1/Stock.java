@@ -27,7 +27,7 @@ public class Stock implements Comparable<Object>{
         this.productName=productName;
     }
 
-    // setters and getters
+    // setters and getters - most of these could be deleted as they are not currently being used
     public int getStockNo() {
         return stockNo;
     }
@@ -52,10 +52,6 @@ public class Stock implements Comparable<Object>{
         this.cost = cost;
     }
 
-    public Date getBuyDate() {
-        return buyDate;
-    }
-
     public void setBuyDate(Date buyDate) {
         this.buyDate = buyDate;
     }
@@ -76,8 +72,12 @@ public class Stock implements Comparable<Object>{
         this.productName = productName;
     }
 
+    public Date getBuyDate() {
+        return buyDate;
+    }
+
     // so the stock objects can be compared when sorting/searching
-    // NOTE: this will only allow comparisons based on the title of the film
+    // NOTE: this will only allow comparisons based buy_date and fallback to stockNo if date is equal
     @Override
     public int compareTo(Object obj) {
 
